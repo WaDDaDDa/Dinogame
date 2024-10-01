@@ -8,6 +8,11 @@ export const addUser = (user) => {
   users.push(user);
 };
 
+// 전체 유저 조회
+export const getUsers = () => {
+  return users;
+};
+
 // 유저가 접속을해서 유저를 추가 하였다면, 접속을 해제한 경우에는 유저를 삭제시켜줘야 한다.
 export const removeUser = (socketId) => {
     const index = users.findIndex((user) => user.socketId === socketId);
@@ -16,7 +21,3 @@ export const removeUser = (socketId) => {
     }
 }
 
-// 전체 유저 조회
-export const getUsers = () => {
-  return users;
-};
