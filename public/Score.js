@@ -1,6 +1,10 @@
+import { sendEvent } from "./Socket.js";
+
+
 class Score {
   score = 0;
-  HIGH_SCORE_KEY = 'highScore';
+  HIGH_SCORE_KEY = "highScore";
+  stageChange = true;
 
   constructor(ctx, scaleRatio) {
     this.ctx = ctx;
@@ -10,6 +14,12 @@ class Score {
 
   update(deltaTime) {
     this.score += deltaTime * 0.001;
+    // 점수가 100점 이상이 될 시 서버에 메세지 전송
+    if (Math.floor(this.score) === 10 && this.stageChange) {
+      this.stageChange = false;
+      console.log(this.score);
+      sendEvent(11, { currentStage: 1000, targetStage: 1001 });
+    }
   }
 
   getItem(itemId) {
@@ -37,7 +47,7 @@ class Score {
 
     const fontSize = 20 * this.scaleRatio;
     this.ctx.font = `${fontSize}px serif`;
-    this.ctx.fillStyle = '#525250';
+    this.ctx.fillStyle = "#525250";
 
     const scoreX = this.canvas.width - 75 * this.scaleRatio;
     const highScoreX = scoreX - 125 * this.scaleRatio;

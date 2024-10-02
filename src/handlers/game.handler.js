@@ -1,9 +1,10 @@
 import { getGameAssets } from "../init/assets.js";
-import { getStage, setStage } from "../models/stage.model.js";
+import { getStage, setStage, clearStage } from "../models/stage.model.js";
 
-export const gameStart = (uuid, payload) => {
+export const gameStart = (userUUID, payload) => {
   // 서버 메모리에 있는 게임 에셋에서 stage 정보를 가지고 온다.
   const { stages } = getGameAssets();
+  clearStage(userUUID);
   // stages 배열에서 0번째 = 첫번째 스테이지의 ID를 해당 유저의 stage에 저장한다.
   setStage(userUUID, stages.data[0].id, payload.timestamp);
   console.log("stage", getStage(userUUID));

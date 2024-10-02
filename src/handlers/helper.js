@@ -3,11 +3,14 @@ import { getUsers, removeUser } from "../models/user.model.js";
 import { CLIENT_VERSION } from '../constants.js';
 import handlerMappings from "./handlerMapping.js";
 import { getGameAssets } from "../init/assets.js";
+import {createStage} from "../models/stage.model.js";
 
 // 커넥션에 관련된 이벤트들을 처리.
 export const handleConnection = (socket, userUUID) => {
   console.log(`New user connected: ${userUUID} with socket ID${socket.id}`);
   console.log("Current users:", getUsers());
+
+  createStage(userUUID);
 
   //emit 메서드로 해당 유저에게 메시지를 전달할 수 있다.
   // 현재의 경우 접속하고 나서 생성된 uuid를 바로 전달해 주고 있다.
