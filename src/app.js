@@ -8,6 +8,7 @@ const server = createServer(app);
 
 const PORT = 3000;
 
+app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 initSocket(server); // 소켓 추가.

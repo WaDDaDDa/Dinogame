@@ -1,6 +1,7 @@
 import { v4 as uudiv4 } from "uuid";
 import { addUser } from "../models/user.model.js";
 import { handleConnection, handleDisconnect } from "./helper.js";
+import { createStage } from "../models/stage.model.js";
 
 const registerHandler = (io) => {
   // 새로운 소켓 연결이 발생할 때마다 그 소켓에 대한 이벤트를 처리할 수 있도록 준비.
