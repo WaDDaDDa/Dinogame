@@ -1,21 +1,30 @@
 import { sendEvent } from "./Socket.js";
+import stages from "./assets/stage.json" with { type: 'json' };
 
 
 class Score {
   score = 0;
   HIGH_SCORE_KEY = "highScore";
   stageChange = true;
+  curStageId = 1000;
+  nextStageId = 1001;
+  nextStageScore = 0;
 
   constructor(ctx, scaleRatio) {
     this.ctx = ctx;
     this.canvas = ctx.canvas;
     this.scaleRatio = scaleRatio;
+    this.setNextStageScore();
+  }
+
+  setNextStageScore(){
+    this.nextStageScore = stages.data.find((stage) => stage.id === this.nextStageId).score;
   }
 
   update(deltaTime) {
     this.score += deltaTime * 0.001;
     // 점수가 100점 이상이 될 시 서버에 메세지 전송
-    if (Math.floor(this.score) === 10 && this.stageChange) {
+    if (Math.floor(this.score) === this.nextStageScore && this.stageChange) {
       this.stageChange = false;
       console.log(this.score);
       sendEvent(11, { currentStage: 1000, targetStage: 1001 });

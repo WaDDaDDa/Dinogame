@@ -23,22 +23,23 @@ export const moveStageHandler = (userId, payload) => {
   const serverTime = Date.now(); // 현재 시간
   const elapsedTime = (serverTime - currentStage.timestamp) / 1000; // 1초단위 계산
 
+  const { stages } = getGameAssets();
+  const nextStageScore = stages.data.find((stage) => stage.id === currentStage.id + 1).score;
+
   // 1초당 1점, 100점 이상 다음스테이지 이동 , 오차 범위 5
   // 클라이언트와 서버 간의 통신 지연시간을 고려해서 오차 범위 설정
   // elapsedTime 은 100 이상 105 이하 일 경우에만 통과
   // 1스테이지 -> 2스테이지로 넘어가는 가정.
-  if (elapsedTime < currentStages.score - 0.25 || elapsedTime > currentStages.score + 0.25) {
-  //if(elapsedTime < 10 - 0.25 || elapsedTime > 10 + 0.25) {
+  if (elapsedTime < nextStageScore - 0.25 || elapsedTime > nextStageScore + 0.25) {
     return { status: "fail", message: `Invalud elapsed time : ${elapsedTime}, serverTime : ${serverTime}, timestamp: ${currentStage.timestamp}` };
   }
 
   // 게임 에셋에서 다음 스테이지의 존재 여부 확인
-  const { stages } = getGameAssets();
   if (!stages.data.some((stage) => stage.id === payload.targetStage)) {
     return { status: "fail", message: "Target stage not found" };
   }
 
   // 유저의 스테이지 정보 업데이트
   setStage(userId, payload.targetStage, serverTime);
-  return { status: "success", message: `elapsed time : ${elapsedTime}, serverTime : ${currentStages.score}, timestamp: ${currentStage.timestamp}` };
+  return { status: "success", message: `elapsed time : ${elapsedTime}, serverTime : ${nextStageScore}, timestamp: ${currentStage.timestamp}` };
 };

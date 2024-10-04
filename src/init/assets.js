@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // 현재 경로에서 두단계 상위로 올라가서 assets에 접근 assets 디렉토리의 절대 경로를 의미한다.
 // __filename = src/init/assets.js => __dirname = src/init => 상위디렉토리 src => 상위 디렉토리 (루트) => 에서 assets
-const basePath = path.join(__dirname, "../../assets");
+const basePath = path.join(__dirname, "../../public/assets");
 
 // 전역 변수로 선언
 let gameAssets = {};
