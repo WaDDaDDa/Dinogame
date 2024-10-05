@@ -1,9 +1,11 @@
 import { getStage, setStage } from "../models/stage.model.js";
 import { getGameAssets } from "../init/assets.js";
+import { getItems } from "../models/item.model.js";
 
 export const moveStageHandler = (userId, payload) => {
   // 유저의 현재 스테이지 배열을 가져오고, 최대 스테이지 ID를 찾는다.
   let currentStages = getStage(userId);
+  console.log(currentStages);
   if (!currentStages.length) {
     return { status: "fail", message: "No stages found for user" };
   }
@@ -21,25 +23,31 @@ export const moveStageHandler = (userId, payload) => {
 
   // 점수 검증
   const serverTime = Date.now(); // 현재 시간
-  const elapsedTime = (serverTime - currentStage.timestamp) / 1000; // 1초단위 계산
+  let elapsedScore = (serverTime - currentStage.timestamp) / 1000 * currentStage.addscore + currentStage.curscore; // 소요시간에 따른 점수.
+  // + 아이템 획득에 따른 점수도 계산이 되어야함.
+  const itemsScore = getItems(userId)[0].score;
+  elapsedScore += itemsScore;
 
   const { stages } = getGameAssets();
   const nextStageScore = stages.data.find((stage) => stage.id === currentStage.id + 1).score;
 
-  // 1초당 1점, 100점 이상 다음스테이지 이동 , 오차 범위 5
-  // 클라이언트와 서버 간의 통신 지연시간을 고려해서 오차 범위 설정
-  // elapsedTime 은 100 이상 105 이하 일 경우에만 통과
-  // 1스테이지 -> 2스테이지로 넘어가는 가정.
-  if (elapsedTime < nextStageScore - 0.25 || elapsedTime > nextStageScore + 0.25) {
-    return { status: "fail", message: `Invalud elapsed time : ${elapsedTime}, serverTime : ${serverTime}, timestamp: ${currentStage.timestamp}` };
+  // 소요 시간을 가지고 점수를 산정하는 방식. 아이템 획득으로 점수가 증가한것은 고려되지 않음.
+  const scoreInter = Math.abs(payload.curScore - elapsedScore);
+  if (!(elapsedScore > nextStageScore - 0.25 &&  scoreInter > 0 && scoreInter < 0.25)) {
+    return { status: "fail", message: `Invalud elapsed time : ${elapsedScore}, serverTime : ${items.score}, timestamp: ${payload.curScore}` };
   }
+
+
 
   // 게임 에셋에서 다음 스테이지의 존재 여부 확인
   if (!stages.data.some((stage) => stage.id === payload.targetStage)) {
     return { status: "fail", message: "Target stage not found" };
   }
 
+  elapsedScore -= itemsScore;
+
   // 유저의 스테이지 정보 업데이트
-  setStage(userId, payload.targetStage, serverTime);
-  return { status: "success", message: `elapsed time : ${elapsedTime}, serverTime : ${nextStageScore}, timestamp: ${currentStage.timestamp}` };
+  const nextAddScore = stages.data.find((stage) => stage.id === currentStage.id + 1).addscore;
+  setStage(userId, payload.targetStage, serverTime, nextAddScore, elapsedScore);
+  return { status: "success", message: `elapsed time : ${elapsedScore}, serverTime : ${nextStageScore}` };
 };
