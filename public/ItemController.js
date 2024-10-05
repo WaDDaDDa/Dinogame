@@ -1,10 +1,11 @@
 import Item from "./Item.js";
+import item_unlock from "./assets/item_unlock.json" with { type: 'json' };
 
 class ItemController {
 
     INTERVAL_MIN = 0;
     INTERVAL_MAX = 12000;
-
+    itemLength = 0;
     nextInterval = null;
     items = [];
 
@@ -19,6 +20,11 @@ class ItemController {
         this.setNextItemTime();
     }
 
+    itemUnlock(stageId) {
+        const test = item_unlock.data.find((unlock) => unlock.stage_id === stageId).item_count;
+        this.itemLength = test;
+    }
+
     setNextItemTime() {
         this.nextInterval = this.getRandomNumber(
             this.INTERVAL_MIN,
@@ -31,7 +37,7 @@ class ItemController {
     }
 
     createItem() {
-        const index = this.getRandomNumber(0, this.itemImages.length - 1);
+        const index = this.getRandomNumber(0, this.itemLength - 1);
         const itemInfo = this.itemImages[index];
         const x = this.canvas.width * 1.5;
         const y = this.getRandomNumber(

@@ -49,5 +49,6 @@ export const moveStageHandler = (userId, payload) => {
   // 유저의 스테이지 정보 업데이트
   const nextAddScore = stages.data.find((stage) => stage.id === currentStage.id + 1).addscore;
   setStage(userId, payload.targetStage, serverTime, nextAddScore, elapsedScore);
+  console.log(`CurStage : ${currentStage.id + 1} `);
   return { status: "success", message: `elapsed time : ${elapsedScore}, serverTime : ${nextStageScore}` };
 };

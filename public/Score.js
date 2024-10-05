@@ -1,7 +1,7 @@
 import { sendEvent } from "./Socket.js";
 import stages from "./assets/stage.json" with { type: 'json' };
 import items from "./assets/item.json" with { type: 'json'};
-
+import { itemController } from "./index.js";
 
 class Score {
   score = 0;
@@ -32,6 +32,7 @@ class Score {
     this.nextStageId = this.nextStageId + 1;
     this.addscore = stages.data.find((stage) => stage.id === this.curStageId).addscore;
     this.nextStageScore = stages.data.find((stage) => stage.id === this.nextStageId).score;
+    itemController.itemUnlock(this.curStageId);
     this.stageChange = true;
   }
 

@@ -5,6 +5,7 @@ import Score from './Score.js';
 import ItemController from './ItemController.js';
 import "./Socket.js";
 import { sendEvent } from './Socket.js';
+import stages from "./assets/stage.json" with { type: 'json' };
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -47,7 +48,7 @@ const ITEM_CONFIG = [
 let player = null;
 let ground = null;
 let cactiController = null;
-let itemController = null;
+export let itemController = null;
 let score = null;
 
 let scaleRatio = null;
@@ -104,7 +105,7 @@ function createSprites() {
   });
 
   itemController = new ItemController(ctx, itemImages, scaleRatio, GROUND_SPEED);
-
+  itemController.itemUnlock(stages.data[0].id);
   score = new Score(ctx, scaleRatio);
 }
 

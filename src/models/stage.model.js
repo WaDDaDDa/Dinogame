@@ -13,8 +13,6 @@ export const getStage = (uuid) => {
 // stage = 아이디, 스테이지 교체된 시간, 스테이지 초당 획득 점수, 이 스테이지까지 걸린 시간
 export const setStage = (uuid, id, timestamp, addscore, curscore) => {
   stages[uuid].push({ id, timestamp, addscore, curscore });
-  console.log(`최근 스테이지 : ${stages[uuid][stages.length - 1]}`);
-
 };
 
 export const clearStage = (uuid) => {
