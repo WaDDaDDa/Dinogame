@@ -21,8 +21,10 @@ class ItemController {
     }
 
     itemUnlock(stageId) {
-        const test = item_unlock.data.find((unlock) => unlock.stage_id === stageId).item_count;
-        this.itemLength = test;
+        const test = item_unlock.data.find((unlock) => unlock.stage_id === stageId);
+        if(test){
+            this.itemLength = test.item_count;
+        }
     }
 
     setNextItemTime() {
@@ -90,6 +92,8 @@ class ItemController {
 
     reset() {
         this.items = [];
+        const test = item_unlock.data.find((unlock) => unlock.stage_id === 1000).item_count;
+        this.itemLength = test;
     }
 }
 

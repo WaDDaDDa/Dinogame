@@ -13,7 +13,7 @@ export const gameStart = (userUUID, payload) => {
   console.log("stage", getStage(userUUID));
   console.log("items", getItems(userUUID));
 
-  return { status: "success" };
+  return { status: "success", message: `Gmae Start`};
 };
 
 export const gameEnd = (uuid, payload) => {

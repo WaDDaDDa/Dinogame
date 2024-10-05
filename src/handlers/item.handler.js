@@ -10,5 +10,5 @@ export const getItemHandler = (userId, payload) => {
   }
 
   addItems(userId, payload.itemId);
-  return { status: "success", message: `addscore : ${payload.itemId}` };
+  return { status: "success", message: `itemId : ${payload.itemId}` };
 };

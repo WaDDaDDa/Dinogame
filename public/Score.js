@@ -17,11 +17,11 @@ class Score {
     this.ctx = ctx;
     this.canvas = ctx.canvas;
     this.scaleRatio = scaleRatio;
-    this.setStage();
+    this.resetStage();
   }
 
-  setStage(){
-    this.StageId = stages.data[0].id;
+  resetStage(){
+    this.curStageId = stages.data[0].id;
     this.nextStageId = stages.data[1].id;
     this.nextStageScore = stages.data[1].score;
     this.addscore = stages.data[0].addscore;
@@ -49,13 +49,13 @@ class Score {
 
   getItem(itemId) {
     const addscore = items.data.find((item) => item.id === itemId).score;
-    console.log(`itemScore : ${addscore}`);
     this.score += addscore;
     sendEvent(4, { itemId: itemId });
   }
 
   reset() {
     this.score = 0;
+    this.resetStage();
   }
 
   setHighScore() {

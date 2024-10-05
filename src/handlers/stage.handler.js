@@ -5,7 +5,6 @@ import { getItems } from "../models/item.model.js";
 export const moveStageHandler = (userId, payload) => {
   // 유저의 현재 스테이지 배열을 가져오고, 최대 스테이지 ID를 찾는다.
   let currentStages = getStage(userId);
-  console.log(currentStages);
   if (!currentStages.length) {
     return { status: "fail", message: "No stages found for user" };
   }
@@ -18,7 +17,7 @@ export const moveStageHandler = (userId, payload) => {
   // id랑 스테이지랑 비교?
   // 클라이언트 vs 서버 비교
   if (currentStage.id !== payload.currentStage) {
-    return { status: "fail", message: "Current stage mismatch" };
+    return { status: "fail", message: `Current stage mismatch currentStage.id : ${currentStage.id} payload.currentStage ${payload.currentStage}` };
   }
 
   // 점수 검증
@@ -49,6 +48,5 @@ export const moveStageHandler = (userId, payload) => {
   // 유저의 스테이지 정보 업데이트
   const nextAddScore = stages.data.find((stage) => stage.id === currentStage.id + 1).addscore;
   setStage(userId, payload.targetStage, serverTime, nextAddScore, elapsedScore);
-  console.log(`CurStage : ${currentStage.id + 1} `);
-  return { status: "success", message: `elapsed time : ${elapsedScore}, serverTime : ${nextStageScore}` };
+  return { status: "success", message: `Stage Change: ${payload.targetStage}` };
 };
