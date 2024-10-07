@@ -30,11 +30,11 @@ server.listen(PORT, async () => {
     console.log("Failed to load game assets", err);
   }
 
-    // // 여기서 redis
-    // try {
-    //   await connectRedis();
-    //   console.log("Redis 연결 완료.");
-    // } catch (err) {
-    //   console.log("Failed to Redis", err);
-    // }
+    // 여기서 redis
+    try {
+      await connectRedis();
+      console.log("Redis 연결 완료.");
+    } catch (err) {
+      console.log("Failed to Redis", err);
+    }
 });
