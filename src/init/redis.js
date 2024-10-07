@@ -57,6 +57,36 @@ async function fetchDataWithCache(key) {
   return dbValue;
 }
 
+async function saveScore(userId, score) {
+    try {
+        const savescore = parseFloat(score);
+        await redisClient.zAdd('userScores', { score: savescore, value: userId });
+        console.log(`사용자 ${userId}의 점수 ${savescore}가 저장되었습니다.`);
+    } catch (error) {
+        console.error('점수 저장 중 오류 발생:', error);
+    }
+}
+
+async function getTopUsers(count) {
+    try {
+        const topUsers = await redisClient.zRangeWithScores('userScores', -count, -1, { REV: true });
+        console.log('상위 사용자:', topUsers);
+        return topUsers;
+    } catch (error) {
+        console.error('점수 조회 중 오류 발생:', error);
+    }
+}
+
+async function keepTop3Users() {
+    try {
+        // 상위 3명만 남기고 그 아래의 사용자 삭제
+        await redisClient.zRemRangeByRank('userScores', 3, -1);
+        console.log('상위 3명 이외의 사용자 삭제 완료');
+    } catch (error) {
+        console.error('사용자 삭제 중 오류 발생:', error);
+    }
+}
+
 async function disconnectRedis() {
   try {
     await redisClient.quit();
@@ -66,4 +96,4 @@ async function disconnectRedis() {
   }
 }
 
-export { redisClient, connectRedis };
+export { redisClient, connectRedis, saveScore };

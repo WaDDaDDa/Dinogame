@@ -1,6 +1,7 @@
 import { getGameAssets } from "../init/assets.js";
 import { getStage, setStage, clearStage } from "../models/stage.model.js";
 import { getItems, setItems, clearItems } from "../models/item.model.js";
+import { saveScore } from "../init/redis.js";
 
 export const gameStart = (userUUID, payload) => {
   // 서버 메모리에 있는 게임 에셋에서 stage 정보를 가지고 온다.
@@ -8,32 +9,46 @@ export const gameStart = (userUUID, payload) => {
   clearStage(userUUID);
   clearItems(userUUID);
   // stages 배열에서 0번째 = 첫번째 스테이지의 ID를 해당 유저의 stage에 저장한다.
-  setStage(userUUID, stages.data[0].id, payload.timestamp, stages.data[0].addscore, 0);
+  setStage(
+    userUUID,
+    stages.data[0].id,
+    payload.timestamp,
+    stages.data[0].addscore,
+    0
+  );
   setItems(userUUID, 0);
   console.log("stage", getStage(userUUID));
   console.log("items", getItems(userUUID));
 
-  return { status: "success", message: `Gmae Start`};
+  return { status: "success", message: `Gmae Start` };
 };
 
-export const gameEnd = (uuid, payload) => {
+export const gameEnd = async (userUUID, payload) => {
   // 클라이언트에서 받은 게임 종료 시 타임스탬프와 총 점수
   // 구조 분해 할당 : 붙이면 이름을 바꿔서 사용할 수 있다.
+  console.log("게임종료");
   const { timestamp: gameEndTime, score } = payload;
-  const stages = getStage(uuid);
-  const items = getItems(uuid);
+  const stages = await getStage(userUUID);
+  const items = await getItems(userUUID);
+  if (!stages || !stages.length) {
+  console.log("실패");
 
-  if (!stages.length) {
     return { status: "fail", message: "No stages found for user" };
+  }
+
+  if (!items || !items.length) {
+    console.log("아이템실패");
+    return { status: "fail", message: "No items found for user" };
   }
 
   const curStage = stages[stages.length - 1];
   // 죽은 스테이지 까지의 점수
   const timeScore = curStage.curscore;
   // 죽은 스테이지 시작부터 죽었을때까지의 점수
-  const stageDuration = (gameEndTime - stage.timestamp) / 1000 * curStage.addscore;
-  // 아이템 점수 
-  const itemScore = items[uuid].score;
+  const stageDuration =
+    ((gameEndTime - curStage.timestamp) / 1000) * curStage.addscore;
+  // 아이템 점수
+  const itemScore = items.score;
   // 총 점수
   const totalScore = timeScore + stageDuration + itemScore;
 
@@ -52,12 +67,14 @@ export const gameEnd = (uuid, payload) => {
 
   // 점수와 타임스탬프 검증 ( ex 클라이언트가 보낸 총점과 계산된 총점 비교)
   // 오차 범위 5 로 설정
-  if (Math.abs(score - totalScore) > 5) {
+  if (Math.abs(score.score - totalScore) > 5) {
     return { status: "fail", message: "Score verification failed" };
   }
 
   // 모든 검증이 통과된 후, 클라이언트에서 제공한 점수 저장하는 로직
   // saveGameResult(userId, clientScore, gameEndTime);
+  console.log(score.score);
+  await saveScore(userUUID, score.score);
   // 검증이 완료되면 게임 종료 처리
-  return { status: "success", message: "Game ended successfully", score };
+  return { status: "success", message: `점수 : ${score.score}` };
 };
